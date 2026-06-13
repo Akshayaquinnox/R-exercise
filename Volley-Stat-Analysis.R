@@ -4,7 +4,7 @@ library(dplyr)
 
 #loading the data and check for missing values
 setwd(getwd())
-matchstatsdata <- read.csv("matchStats.csv",header = TRUE,  sep = ";",dec = ".")
+matchstatsdata <- read.csv("DataSet/matchStats.csv",header = TRUE,  sep = ";",dec = ".")
 
 # Check for columns with missing values
 colSums(is.na(matchstatsdata))
