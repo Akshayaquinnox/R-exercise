@@ -10,6 +10,13 @@ matchstatsdata <- read.csv("DataSet/matchStats.csv",header = TRUE,  sep = ";",de
 colSums(is.na(matchstatsdata))
 #summary(matchstatsdata)
 
+#Receptions.Home,Set4.Home,Set4.Away,Set5.Home,Set5.Away have NA values
+#Set4 and Set5  Could be the case of MNAR since the missing data occurs 
+#for data entries where the winner is selected based on scores of previous three sets
+
+#Receptions.Home coulb be the case of MCAR because the value does not depend on any variables
+
+
 # Adding column Home.Team_won to indicate whether the home team won 
 matchstatsdata$Home.Team_won <- ifelse(matchstatsdata$Home.Team == matchstatsdata$Winner, 1, 0)
 
