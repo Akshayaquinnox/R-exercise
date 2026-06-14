@@ -1,6 +1,7 @@
 library(ggplot2)
 library(tidyverse)
 library(dplyr)
+library(GGally)
 
 #loading the data and check for missing values
 setwd(getwd())
@@ -14,7 +15,7 @@ colSums(is.na(matchstatsdata))
 #Set4 and Set5  Could be the case of MNAR since the missing data occurs 
 #for data entries where the winner is selected based on scores of previous three sets
 
-#Receptions.Home coulb be the case of MCAR because the value does not depend on any variables
+#Receptions.Home could be the case of MCAR because the value does not depend on any variables
 
 
 # Adding column Home.Team_won to indicate whether the home team won 
@@ -56,4 +57,32 @@ matchstatsdata$Set5_Home_Win <- ifelse(
   1,
   0
 )
+#outlier detection
+ggplot(matchstatsdata,aes(x=Kills.Home,y=Home.Team))+geom_boxplot()
+ggplot(matchstatsdata,aes(x=Blocks.Home,y=Home.Team))+geom_boxplot()
+
+#normality Detection for one variable Kills.Home
+q_empirical <- sort(matchstatsdata$Kills.Home)
+j_star <- (c(1:length(matchstatsdata$Kills.Home)
+) - 0.5)/length(matchstatsdata$Kills.Home)
+q_theoretical <- qnorm(j_star)
+plot(q_theoretical, q_empirical, xlab="Theoretical Quantiles",ylab="Empirical Quantiles")
+abline(lm(q_theoretical~q_empirical), col="red")
+
+shapiro.test(q_empirical)
+
+#applying normal distribution to all numeric columns
+numeric_cols <- matchstatsdata[, sapply(matchstatsdata, is.numeric)]
+par(mar = c(4, 3, 2, 2))
+layout(matrix(1:8, ncol = 4, nrow = 2))
+sapply(colnames(numeric_cols), function(x) {
+  vec <- na.omit(numeric_cols[[x]])  # extract numeric vector and remove NAs
+  
+  qqnorm(vec, main = x, pch = 19, cex.lab = 1.5, cex.main = 1.5, ylab = "")
+  qqline(vec, lwd = 2, col = "red")
+})
+
+
+
+
 
