@@ -6,10 +6,8 @@ library(GGally)
 #loading the data and check for missing values
 setwd(getwd())
 matchstatsdata <- read.csv("DataSet/matchStats.csv",header = TRUE,  sep = ";",dec = ".")
-
-# Check for columns with missing values
 colSums(is.na(matchstatsdata))
-#summary(matchstatsdata)
+
 
 #Receptions.Home,Set4.Home,Set4.Away,Set5.Home,Set5.Away have NA values
 #Set4 and Set5  Could be the case of MNAR since the missing data occurs 
@@ -58,8 +56,23 @@ matchstatsdata$Set5_Home_Win <- ifelse(
   0
 )
 #outlier detection
-ggplot(matchstatsdata,aes(x=Kills.Home,y=Home.Team))+geom_boxplot()
+ggplot(matchstatsdata,aes(x=Kills.Home,y=Home.Team))+geom_boxplot() 
 ggplot(matchstatsdata,aes(x=Blocks.Home,y=Home.Team))+geom_boxplot()
+ggplot(matchstatsdata,aes(x=Set1.Home,y=Home.Team))+geom_boxplot()
+ggplot(matchstatsdata,aes(x=Set2.Home,y=Home.Team))+geom_boxplot()
+ggplot(matchstatsdata,aes(x=Set3.Home,y=Home.Team))+geom_boxplot()
+ggplot(matchstatsdata,aes(x=Set4.Home,y=Home.Team))+geom_boxplot()
+ggplot(matchstatsdata,aes(x=Set5.Home,y=Home.Team))+geom_boxplot()
+
+# sapply(colnames(matchstatsdata),function(x){
+#   ggplot(matchstatsdata,aes(x=x,y=Home.Team))+geom_boxplot()
+# })
+
+#correlation
+df_num=matchstatsdata[, sapply(matchstatsdata, is.numeric)]
+cormatrix <- cor(df_num, use = "pairwise.complete.obs")
+cormatrix
+corrplot(cormatrix, method = "color")
 
 #normality Detection for one variable Kills.Home
 q_empirical <- sort(matchstatsdata$Kills.Home)
@@ -81,6 +94,8 @@ sapply(colnames(numeric_cols), function(x) {
   qqnorm(vec, main = x, pch = 19, cex.lab = 1.5, cex.main = 1.5, ylab = "")
   qqline(vec, lwd = 2, col = "red")
 })
+
+
 
 
 
