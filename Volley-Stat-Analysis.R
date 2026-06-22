@@ -7,27 +7,28 @@ library(GGally)
 library(MASS)
 library(mice)
 
-#loading the data and check for missing values
+#1. loading the data and check for missing values
+
 setwd(getwd())
 matchstatsdata <- read.csv("DataSet/matchStats.csv",header = TRUE,  sep = ";",dec = ".")
-colSums(is.na(matchstatsdata))
 
+#2 NA Values
+colSums(is.na(matchstatsdata))   
+#NA columns: Receptions.Home,Set4.Home,Set4.Away,Set5.Home,Set5.Away 
 
-#The column that have NA values are: Receptions.Home,Set4.Home,Set4.Away,Set5.Home,Set5.Away 
-#Set4 and Set5  Could be the case of MNAR since the missing data occurs 
-#for data entries where the winner is selected based on scores of previous three sets
+#MNAR:Set4,Set5----------Values Depend on previous 3 sets
+#MCAR:Receptions.Home----Value does not depend on any variables
 
-#Receptions.Home could be the case of MCAR because the value does not depend on any variables
+#3 IMPUTATION
 
-#since the matches were not played replacing NA values to 0
+#since the matches were not played in set4 and set5 replacing NA values to 0
+
 sets_mnar <- c("Set4.Home","Set4.Away","Set5.Home","Set5.Away")
 
 matchstatsdata[sets_mnar] <- lapply(matchstatsdata[sets_mnar],
                                     function(x) ifelse(is.na(x), 0, x))
 colSums(is.na(matchstatsdata))
 
-# Adding column Home.Team_won to indicate whether the home team won 
-matchstatsdata$Home.Team_won <- ifelse(matchstatsdata$Home.Team == matchstatsdata$Winner, 1, 0)
 
 # Select only numeric variables for imputation model
 num_data <- matchstatsdata[, sapply(matchstatsdata, is.numeric)]
@@ -40,10 +41,13 @@ imp <- mice(num_data,
 completed_data <- complete(imp, 1)   # choose imputed dataset 1
 matchstatsdata$Receptions.Home <- completed_data$Receptions.Home
 
+#4.
+# Adding column Home.Team_won to indicate whether the home team won 
+matchstatsdata$Home.Team_won <- ifelse(matchstatsdata$Home.Team == matchstatsdata$Winner, 1, 0)
 
+#5.Outlier and Normality Detection
 #outlier detection
 ggplot(matchstatsdata,aes(x=Kills.Home,y=Home.Team))+geom_boxplot() 
-
 num_cols <- names(matchstatsdata)[sapply(matchstatsdata, is.numeric)]
 
 sapply(num_cols, function(col) {
@@ -86,8 +90,52 @@ sapply(colnames(numeric_cols), function(x) {
 })
 
 
+#EDA
+
+barplot(table(matchstatsdata$Winner))+title(main="Winner Stats")
+barplot(table(matchstatsdata$Loser))+title(main="Losser Stats")
+
+Home_winners <- as.data.frame(table(matchstatsdata$Home.Team, matchstatsdata$Winner))
+colnames(Home_winners) <- c("HomeTeam", "Winner", "Count")
 
 
+ggplot(Home_winners, aes(x = HomeTeam, y = Count, fill = Winner)) +
+  geom_col(position = "stack") +
+  labs(title = "Home Winner Stats",
+       x = "Home Team",
+       y = "Number of Wins",
+       fill = "Winner") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+Home_losers <- as.data.frame(table(matchstatsdata$Home.Team, matchstatsdata$Loser))
+colnames(Home_losers) <- c("HomeTeam", "Loser", "Count")
+
+
+ggplot(Home_losers, aes(x = HomeTeam, y = Count, fill = Loser)) +
+  geom_col(position = "stack") +
+  labs(title = "Home Lose Stats",
+       x = "Home Team",
+       y = "Number of Loses",
+       fill = "Loser") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+
+
+
+ggplot(matchstatsdata, aes(x = Receptions.Away, y = Total.Points.Home)) +
+  geom_point(color = "steelblue", alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(title = "Relationship: Away Reception vs Home Total Points",
+       x = "Receptions (Away)",
+       y = "Total Points (Home)")
+
+ggplot(matchstatsdata, aes(x = Receptions.Home, y = Total.Points.Home)) +
+  geom_point(color = "steelblue", alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(title = "Relationship: Away Reception vs Home Total Points",
+       x = "Receptions (Home)",
+       y = "Total Points (Home)")
 
 
 
@@ -111,10 +159,3 @@ sapply(colnames(numeric_cols), function(x) {
 #Digs.Away
 # Serbia digs.away has highest of 106 digs still serbia lost slovania
 #Serbia digs.away has lowest of 29 still serbia lost
-
-
-
-
-
-
-
