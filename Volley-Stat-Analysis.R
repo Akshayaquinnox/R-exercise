@@ -10,7 +10,7 @@ colSums(is.na(matchstatsdata))
 
 
 #Receptions.Home,Set4.Home,Set4.Away,Set5.Home,Set5.Away have NA values
-#Set4 and Set5  Could be the case of MNAR since the missing data occurs 
+#Set4 and Set5  Could be the case of MAR since the missing data occurs 
 #for data entries where the winner is selected based on scores of previous three sets
 
 #Receptions.Home could be the case of MCAR because the value does not depend on any variables
