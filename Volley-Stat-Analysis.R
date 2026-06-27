@@ -47,6 +47,14 @@ matchstatsdata$Home.Team_won <- ifelse(matchstatsdata$Home.Team == matchstatsdat
 
 #5.Outlier and Normality Detection
 #outlier detection
+
+ggplot(matchstatsdata,aes(x=Kills.Home,y=Home.Team))+geom_boxplot() 
+ggplot(matchstatsdata,aes(x=Blocks.Home,y=Home.Team))+geom_boxplot()
+ggplot(matchstatsdata,aes(x=Set1.Home,y=Home.Team))+geom_boxplot()
+ggplot(matchstatsdata,aes(x=Set2.Home,y=Home.Team))+geom_boxplot()
+ggplot(matchstatsdata,aes(x=Set3.Home,y=Home.Team))+geom_boxplot()
+ggplot(matchstatsdata,aes(x=Set4.Home,y=Home.Team))+geom_boxplot()
+ggplot(matchstatsdata,aes(x=Set5.Home,y=Home.Team))+geom_boxplot()
 ggplot(matchstatsdata,aes(x=Kills.Home,y=Home.Team))+geom_boxplot() 
 num_cols <- names(matchstatsdata)[sapply(matchstatsdata, is.numeric)]
 
@@ -92,6 +100,8 @@ sapply(colnames(numeric_cols), function(x) {
 
 #EDA
 
+
+
 barplot(table(matchstatsdata$Winner))+title(main="Winner Stats")
 barplot(table(matchstatsdata$Loser))+title(main="Losser Stats")
 
@@ -129,14 +139,6 @@ ggplot(matchstatsdata, aes(x = Receptions.Away, y = Total.Points.Home)) +
   labs(title = "Relationship: Away Reception vs Home Total Points",
        x = "Receptions (Away)",
        y = "Total Points (Home)")
-
-ggplot(matchstatsdata, aes(x = Receptions.Home, y = Total.Points.Home)) +
-  geom_point(color = "steelblue", alpha = 0.7) +
-  geom_smooth(method = "lm", se = FALSE, color = "red") +
-  labs(title = "Relationship: Away Reception vs Home Total Points",
-       x = "Receptions (Home)",
-       y = "Total Points (Home)")
-
 
 
 
